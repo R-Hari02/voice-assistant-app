@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import logo from './logo.png';
 const API_KEY = "AIzaSyDcx39dpx5qe4OKSe6L7hi7W7s9bb_KVb0";
 
 export default function VoiceAssistantApp() {
@@ -209,7 +209,7 @@ export default function VoiceAssistantApp() {
       {/* Page content */}
       {page === 'about' ? (
         <div className="flex flex-col items-center justify-center min-h-screen px-4 py-8">
-          <img src="/image/logo.png" alt="ProHariAI Logo" className="h-32 w-32 rounded-full mb-4" />
+          <img src={logo} alt="ProHariAI Logo" className="h-32 w-32 rounded-full mb-4" />
           <p className="text-lg text-gray-700 dark:text-gray-300">ProHari AI created by R Harinandan</p>
           <button
             onClick={() => setPage('assistant')}
