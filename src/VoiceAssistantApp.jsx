@@ -224,7 +224,7 @@ export default function VoiceAssistantApp() {
             {isSpeaking && page === 'assistant' && (
               <div className="absolute -inset-2 rounded-full animate-pulse bg-black/20 dark:bg-purple-600/50 blur-2xl"></div>
             )}
-            <img src="/image/logo.png" alt="ProHariAI Logo" className="h-24 w-24 rounded-full relative" />
+            <img src={logo} alt="ProHariAI Logo" className="h-24 w-24 rounded-full relative" />
           </div>
           <h1 className="text-2xl md:text-3xl font-semibold mb-6 text-gray-700 dark:text-gray-200">ProHariAI Virtual Assistant</h1>
 
