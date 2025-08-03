@@ -7,7 +7,9 @@ export default function VoiceAssistantApp() {
   const [listening, setListening] = useState(false);
   const [inputText, setInputText] = useState('');
   const [darkMode, setDarkMode] = useState(false);
-
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [page, setPage] = useState('assistant');
   // Check for saved theme preference or default to light mode
   useEffect(() => {
     const isDark = localStorage.getItem('darkMode') === 'true';
@@ -32,7 +34,7 @@ export default function VoiceAssistantApp() {
   const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
   recognition.lang = 'en-US';
   recognition.interimResults = false;
-  
+
   // Add browser support message if needed
   if (!(window.SpeechRecognition || window.webkitSpeechRecognition)) {
     setMessages(prev => [...prev, { sender: 'System', text: 'Speech recognition not supported in this browser.' }]);
@@ -41,6 +43,14 @@ export default function VoiceAssistantApp() {
   const speak = (text) => {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'en-US';
+
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+    };
+    utterance.onend = () => {
+      setIsSpeaking(false);
+    };
+
     speechSynthesis.speak(utterance);
   };
 
@@ -55,7 +65,7 @@ export default function VoiceAssistantApp() {
 
     // Add user message to chat
     setMessages((prev) => [...prev, { sender: 'You', text: inputText }]);
-    
+
     // Clear input field
     const userText = inputText;
     setInputText('');
@@ -94,7 +104,7 @@ export default function VoiceAssistantApp() {
 
     try {
       console.log('Sending request to Gemini API with prompt:', prompt);
-      
+
       const modelName = 'gemini-1.5-flash-latest'; // Use a current model
       const res = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${API_KEY}`,
@@ -106,48 +116,48 @@ export default function VoiceAssistantApp() {
           }),
         }
       );
-      
+
       console.log('API response status:', res.status);
-      
+
       // Check if the response is ok
       if (!res.ok) {
         const errorText = await res.text();
         console.error('API error response:', errorText);
-        
+
         // Special handling for API key errors
         if (res.status === 403 || res.status === 401) {
           return "API Error: Invalid or missing API key. Please check your API key.";
         }
-        
+
         return `API Error: ${res.status} - ${res.statusText}`;
       }
-      
+
       const data = await res.json();
       console.log('API response data:', data);
-      
+
       // Check if we have valid content in the response
       if (!data?.candidates?.[0]?.content?.parts?.[0]?.text) {
         console.warn('Unexpected API response structure:', data);
         return "Sorry, I couldn't understand the response.";
       }
-      
+
       return data.candidates[0].content.parts[0].text;
     } catch (error) {
       console.error('Error in sendToGemini:', error);
-      
+
       // Check for network errors
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
         return "Network Error: Please check your internet connection.";
       }
-      
+
       return `Error: ${error.message || 'Unknown error occurred'}`;
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-4 py-8">
-      {/* Dark mode toggle button */}
-      <div className="w-full max-w-xl flex justify-end mb-2">
+    <div className={`flex flex-col items-center justify-center min-h-screen px-4 py-8 glow-edge ${isSpeaking && page === 'assistant' ? 'speaking-gradient' : ''}`}>
+      {/* Dark mode toggle button and hamburger menu */}
+      <div className="w-full max-w-5xl flex justify-between items-center mb-2">
         <button
           onClick={toggleDarkMode}
           className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
@@ -165,74 +175,131 @@ export default function VoiceAssistantApp() {
             </svg>
           )}
         </button>
+        {/* Hamburger menu button */}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="p-2 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+          aria-label="Toggle menu"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
       </div>
-
-      <img src="/image/logo.png" alt="ProHariAI Logo" className="h-24 w-24 rounded-full mb-4" />
-      <h1 className="text-2xl md:text-3xl font-semibold mb-6 text-gray-700 dark:text-gray-200">ProHariAI Virtual Assistant</h1>
-
-      <div className="w-full max-w-xl bg-white dark:bg-gray-800 rounded-xl p-4 h-[32rem] overflow-y-auto mb-6 shadow-sm border border-gray-200 dark:border-gray-700" style={{scrollBehavior: 'smooth'}}>
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`mb-3 p-3 rounded-lg text-sm ${
-              msg.sender === 'You' 
-                ? 'bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 self-end ml-8' 
-                : msg.sender === 'ProHariAI'
-                  ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 mr-8'
-                  : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
-            }`}
-          >
-            <strong>{msg.sender}:</strong> {msg.text}
-          </div>
-        ))}
-      </div>
-
-      {/* Text input section */}
-      <form onSubmit={handleTextSubmit} className="w-full max-w-xl mb-6">
-        <div className="flex">
-          <input
-            type="text"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            placeholder="Type your message..."
-            className="flex-1 px-4 py-2 rounded-l-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-400 dark:focus:ring-gray-500"
-          />
+      {/* Menu dropdown */}
+      {menuOpen && (
+        <div className="absolute top-16 right-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-lg w-48 z-50">
+          <ul className="flex flex-col">
+            <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">Home</li>
+            <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">Dashboard</li>
+            <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">Login</li>
+            <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">Signup</li>
+            <li
+              className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+              onClick={() => {
+                setPage('about');
+                setMenuOpen(false);
+              }}
+            >
+              About Us
+            </li>
+          </ul>
+        </div>
+      )}
+      {/* Page content */}
+      {page === 'about' ? (
+        <div className="flex flex-col items-center justify-center min-h-screen px-4 py-8">
+          <img src="/image/logo.png" alt="ProHariAI Logo" className="h-32 w-32 rounded-full mb-4" />
+          <p className="text-lg text-gray-700 dark:text-gray-300">ProHari AI created by R Harinandan</p>
           <button
-            type="submit"
-            className="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-r-lg transition-colors text-sm dark:bg-gray-600 dark:hover:bg-gray-700"
+            onClick={() => setPage('assistant')}
+            className="mt-6 px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-800 dark:bg-gray-600 dark:hover:bg-gray-700"
           >
-            Send
+            Back
           </button>
         </div>
-      </form>
+      ) : (
+        <div className="flex flex-col items-center w-full">
+          <div className="relative mb-4">
+            {isSpeaking && page === 'assistant' && (
+              <div className="absolute -inset-2 rounded-full animate-pulse bg-black/20 dark:bg-purple-600/50 blur-2xl"></div>
+            )}
+            <img src="/image/logo.png" alt="ProHariAI Logo" className="h-24 w-24 rounded-full relative" />
+          </div>
+          <h1 className="text-2xl md:text-3xl font-semibold mb-6 text-gray-700 dark:text-gray-200">ProHariAI Virtual Assistant</h1>
 
-      <button
-        onClick={handleMicClick}
-        className={`w-16 h-16 rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all ${
-          listening 
-            ? 'animate-pulseMic bg-gray-300 border-2 border-gray-400 dark:bg-gray-700 dark:border-gray-500' 
-            : 'bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-600'
-        }`}
-        aria-label="Voice input"
-      >
-        <svg 
-          xmlns="http://www.w3.org/2000/svg" 
-          className={`h-8 w-8 ${listening ? 'text-gray-700' : 'text-gray-500'} dark:text-gray-300`}
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
-          strokeWidth="2"
-        >
-          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
-          <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-          <line x1="12" y1="19" x2="12" y2="23" />
-          <line x1="8" y1="23" x2="16" y2="23" />
-        </svg>
-      </button>
+          <div
+            className="w-full max-w-5xl bg-white dark:bg-gray-800 p-4 h-[40rem] overflow-y-auto mb-6"
+            style={{
+              scrollBehavior: 'smooth',
+              maskImage: 'linear-gradient(to bottom, black, black 85%, transparent)',
+              WebkitMaskImage: 'linear-gradient(to bottom, black, black 85%, transparent)',
+            }}
+          >
+            {messages.map((msg, index) => (
+              <div
+                key={index}
+                className={`mb-3 p-3 rounded-lg text-sm ${
+                  msg.sender === 'You' 
+                    ? 'bg-gray-800 dark:bg-gray-700 text-white dark:text-gray-200 self-end ml-8' 
+                    : msg.sender === 'ProHariAI'
+                      ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 mr-8'
+                      : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
+                }`}
+              >
+                <strong>{msg.sender}:</strong> {msg.text}
+              </div>
+            ))}
+          </div>
 
-      <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
-        {listening ? 'Listening...' : 'Tap the mic and speak or type above'}
-      </p>
+          {/* Text input section */}
+          <form onSubmit={handleTextSubmit} className="w-full max-w-5xl mb-6">
+            <div className="flex">
+              <input
+                type="text"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                placeholder="Type your message..."
+                className="flex-1 px-4 py-2 rounded-l-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-400 dark:focus:ring-gray-500"
+              />
+              <button
+                type="submit"
+                className="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-r-lg transition-colors text-sm dark:bg-gray-600 dark:hover:bg-gray-700"
+              >
+                Send
+              </button>
+            </div>
+          </form>
+
+          <button
+            onClick={handleMicClick}
+            className={`w-16 h-16 rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all ${
+              listening 
+                ? 'animate-pulseMic bg-gray-300 border-2 border-gray-400 dark:bg-gray-700 dark:border-gray-500' 
+                : 'bg-white border border-gray-300 dark:bg-gray-800 dark:border-gray-600'
+            }`}
+            aria-label="Voice input"
+          >
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              className={`h-8 w-8 ${listening ? 'text-gray-700' : 'text-gray-500'} dark:text-gray-300`}
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2"
+            >
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+              <line x1="12" y1="19" x2="12" y2="23" />
+              <line x1="8" y1="23" x2="16" y2="23" />
+            </svg>
+          </button>
+
+          <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+            {listening ? 'Listening...' : 'Tap the mic and speak or type above'}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
