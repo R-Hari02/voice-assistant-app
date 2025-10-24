@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import logo from './logo.png';
-const API_KEY = "AIzaSyDcx39dpx5qe4OKSe6L7hi7W7s9bb_KVb0";
+const API_KEY = "AIzaSyBk3A8CLR8UyuO5hCc3Qf-fkgFLmKq54dc";
 
 export default function VoiceAssistantApp() {
   const [messages, setMessages] = useState([]);
