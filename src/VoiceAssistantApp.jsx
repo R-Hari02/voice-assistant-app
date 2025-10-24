@@ -105,7 +105,7 @@ export default function VoiceAssistantApp() {
     try {
       console.log('Sending request to Gemini API with prompt:', prompt);
 
-      const modelName = 'gemini-1.5-flash-latest'; // Use a current model
+      const modelName = 'gemini-2.5-flash-latest'; // Use a current model
       const res = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${API_KEY}`,
         {
