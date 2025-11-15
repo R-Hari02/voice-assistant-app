@@ -503,7 +503,7 @@ export default function VoiceAssistantApp() {
       {/* Page content */}
       {page === 'about' ? (
         <div className="flex flex-col items-center justify-center min-h-screen px-4 py-8">
-          <img src="/image/logo.png" alt="ProHariAI Logo" className="h-32 w-32 rounded-full mb-4" />
+          <img src="/logo.png" alt="ProHariAI Logo" className="h-32 w-32 rounded-full mb-4" />
           <p className="text-lg text-gray-700 dark:text-gray-300">ProHari AI created by R Harinandan</p>
           <div className="mt-6 flex flex-col items-center space-y-4">
             <div className="flex items-center space-x-2">
@@ -528,12 +528,12 @@ export default function VoiceAssistantApp() {
         </div>
       ) : page === 'dashboard' ? (
         <div className="flex flex-col items-center justify-center min-h-screen px-4 py-8">
-          <img src="/image/logo.png" alt="ProHariAI Logo" className="h-48 w-48 rounded-full mb-4" />
+          <img src="/logo.png" alt="ProHariAI Logo" className="h-48 w-48 rounded-full mb-4" />
           <h1 className="text-3xl font-semibold mb-6 text-gray-700 dark:text-gray-200">ProHari AI by ProSphere</h1>
-          <img src="/image/logo.png" alt="ProHariAI Logo" className="h-32 w-32 rounded-full mb-6" />
+          <img src="/logo.png" alt="ProHariAI Logo" className="h-32 w-32 rounded-full mb-6" />
           <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-6 mb-6 flex flex-col items-center">
             <h2 className="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">ProHari AI</h2>
-            <img src="/image/logo.png" alt="ProHariAI Logo" className="h-24 w-24 rounded-full" />
+            <img src="/logo.png" alt="ProHariAI Logo" className="h-24 w-24 rounded-full" />
           </div>
           <button
             onClick={() => setPage('assistant')}
@@ -572,7 +572,7 @@ export default function VoiceAssistantApp() {
             {isSpeaking && page === 'assistant' && (
               <div className="absolute -inset-2 rounded-full animate-pulse bg-black/20 dark:bg-purple-600/50 blur-2xl"></div>
             )}
-            <img src="/image/logo.png" alt="ProHariAI Logo" className="h-24 w-24 rounded-full relative" />
+            <img src="/logo.png" alt="ProHariAI Logo" className="h-24 w-24 rounded-full relative" />
           </div>
           <h1 className="text-2xl md:text-3xl font-semibold mb-6 text-gray-700 dark:text-gray-200">ProHariAI Virtual Assistant</h1>
 
