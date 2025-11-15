@@ -444,6 +444,19 @@ export default function VoiceAssistantApp() {
               </div>
             )}
           </div>
+          {/* Mute button, visible only when speaking */}
+          {isSpeaking && (
+            <button
+              onClick={stopSpeech}
+              className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+              aria-label="Stop speech"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clipRule="evenodd" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+              </svg>
+            </button>
+          )}
         </div>
         {/* Hamburger menu button */}
         <button
@@ -503,7 +516,7 @@ export default function VoiceAssistantApp() {
       {/* Page content */}
       {page === 'about' ? (
         <div className="flex flex-col items-center justify-center min-h-screen px-4 py-8">
-          <img src="/logo.png" alt="ProHariAI Logo" className="h-32 w-32 rounded-full mb-4" />
+          <img src="/image/logo.png" alt="ProHariAI Logo" className="h-32 w-32 rounded-full mb-4" />
           <p className="text-lg text-gray-700 dark:text-gray-300">ProHari AI created by R Harinandan</p>
           <div className="mt-6 flex flex-col items-center space-y-4">
             <div className="flex items-center space-x-2">
@@ -528,12 +541,12 @@ export default function VoiceAssistantApp() {
         </div>
       ) : page === 'dashboard' ? (
         <div className="flex flex-col items-center justify-center min-h-screen px-4 py-8">
-          <img src="/logo.png" alt="ProHariAI Logo" className="h-48 w-48 rounded-full mb-4" />
+          <img src="/image/logo.png" alt="ProHariAI Logo" className="h-48 w-48 rounded-full mb-4" />
           <h1 className="text-3xl font-semibold mb-6 text-gray-700 dark:text-gray-200">ProHari AI by ProSphere</h1>
-          <img src="/logo.png" alt="ProHariAI Logo" className="h-32 w-32 rounded-full mb-6" />
+          <img src="/image/logo.png" alt="ProHariAI Logo" className="h-32 w-32 rounded-full mb-6" />
           <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-6 mb-6 flex flex-col items-center">
             <h2 className="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-200">ProHari AI</h2>
-            <img src="/logo.png" alt="ProHariAI Logo" className="h-24 w-24 rounded-full" />
+            <img src="/image/logo.png" alt="ProHariAI Logo" className="h-24 w-24 rounded-full" />
           </div>
           <button
             onClick={() => setPage('assistant')}
@@ -572,7 +585,7 @@ export default function VoiceAssistantApp() {
             {isSpeaking && page === 'assistant' && (
               <div className="absolute -inset-2 rounded-full animate-pulse bg-black/20 dark:bg-purple-600/50 blur-2xl"></div>
             )}
-            <img src="/logo.png" alt="ProHariAI Logo" className="h-24 w-24 rounded-full relative" />
+            <img src="/image/logo.png" alt="ProHariAI Logo" className="h-24 w-24 rounded-full relative" />
           </div>
           <h1 className="text-2xl md:text-3xl font-semibold mb-6 text-gray-700 dark:text-gray-200">ProHariAI Virtual Assistant</h1>
 
@@ -603,29 +616,18 @@ export default function VoiceAssistantApp() {
                 )}
               </div>
             ))}
-            {isSpeaking && (
-              <button
-                onClick={stopSpeech}
-                className="absolute bottom-4 right-4 p-2 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-colors"
-                aria-label="Stop speech"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clipRule="evenodd" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
-                </svg>
-              </button>
-            )}
+
           </div>
 
           {/* Text input section */}
           <form onSubmit={handleTextSubmit} className="w-full max-w-5xl mb-6">
-            <div className="flex">
+            <div className="flex flex-wrap gap-2">
               <input
                 type="text"
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder="Type your message..."
-                className="flex-1 px-4 py-2 rounded-l-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-400 dark:focus:ring-gray-500"
+                className="flex-1 min-w-0 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-1 focus:ring-gray-400 dark:focus:ring-gray-500"
               />
               <input
                 type="file"
@@ -636,7 +638,7 @@ export default function VoiceAssistantApp() {
               />
               <label
                 htmlFor="file-upload"
-                className="px-3 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 cursor-pointer transition-colors text-sm flex items-center"
+                className="px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 cursor-pointer transition-colors text-sm flex items-center"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -645,7 +647,7 @@ export default function VoiceAssistantApp() {
               </label>
               <button
                 type="submit"
-                className="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-r-lg transition-colors text-sm dark:bg-gray-600 dark:hover:bg-gray-700"
+                className="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg transition-colors text-sm dark:bg-gray-600 dark:hover:bg-gray-700"
               >
                 Send
               </button>
