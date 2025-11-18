@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Login from './Login';
 import ForgetPassword from './ForgetPassword';
 
-const API_KEY = "AIzaSyAQeErVFkKQLcPVOgUnVThGH_niE6ZssAs";
+const API_KEY = "AIzaSyAQeErVFkKQLcPVOgUnVThGH_niE6ZssAs;
 
 // Define personas
 const personas = [
