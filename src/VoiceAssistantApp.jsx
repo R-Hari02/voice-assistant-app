@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Login from './Login';
 import ForgetPassword from './ForgetPassword';
 
-const API_KEY = "AIzaSyAQeErVFkKQLcPVOgUnVThGH_niE6ZssAs;
+const API_KEY = "AIzaSyAQeErVFkKQLcPVOgUnVThGH_niE6ZssAs";
 
 // Define personas
 const personas = [
@@ -128,9 +128,9 @@ export default function VoiceAssistantApp() {
         return;
       }
 
-      // Validate file size (max 10MB)
-      if (file.size > 10 * 1024 * 1024) {
-        alert('File size must be less than 10MB.');
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB.');
         return;
       }
 
